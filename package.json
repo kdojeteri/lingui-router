@@ -12,6 +12,13 @@
     "node": ">=8",
     "npm": ">=5"
   },
+  "keywords": [
+    "i18n",
+    "internationalization",
+    "react-router",
+    "lingui",
+    "babel-plugin-macros"
+  ],
   "scripts": {
     "test": "cross-env CI=1 react-scripts-ts test --env=jsdom",
     "test:watch": "react-scripts-ts test --env=jsdom",
@@ -25,19 +32,31 @@
   "peerDependencies": {
     "prop-types": "^15.5.4",
     "react": "^15.0.0 || ^16.0.0",
-    "react-dom": "^15.0.0 || ^16.0.0"
+    "react-dom": "^15.0.0 || ^16.0.0",
+    "react-router": "^4.0.0",
+    "react-router-dom": "^4.0.0",
+    "@lingui/core": "^2.2.0",
+    "@lingui/react": "^2.2.0"
   },
   "devDependencies": {
+    "@lingui/core": "^2.2.0",
     "@svgr/rollup": "^2.4.1",
     "@types/jest": "^23.1.5",
+    "@types/lingui__core": "^2.2.0",
+    "@types/ramda": "^0.25.43",
     "@types/react": "^16.3.13",
     "@types/react-dom": "^16.0.5",
+    "@types/react-router-dom": "^4.3.1",
+    "@types/lingui__react": "^2.2.0",
     "babel-core": "^6.26.3",
     "babel-runtime": "^6.26.0",
     "cross-env": "^5.1.4",
     "gh-pages": "^1.2.0",
+    "ramda": "latest",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
+    "react-router": "^4.0.0",
+    "react-router-dom": "^4.0.0",
     "react-scripts-ts": "^2.16.0",
     "rollup": "^0.62.0",
     "rollup-plugin-babel": "^3.0.7",
@@ -47,7 +66,8 @@
     "rollup-plugin-postcss": "^1.6.2",
     "rollup-plugin-typescript2": "^0.17.0",
     "rollup-plugin-url": "^1.4.0",
-    "typescript": "^2.8.3"
+    "typescript": "^2.8.3",
+    "@lingui/react": "latest"
   },
   "files": [
     "dist"
