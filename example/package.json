@@ -100,7 +100,11 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "devDependencies": {
-    "@lingui/babel-preset-react": "^2.7.2"
+  "lingui": {
+    "extractBabelOptions": {
+      "plugins": [
+        "lingui-router/babel"
+      ]
+    }
   }
 }

@@ -16,7 +16,12 @@ export default class App extends Component {
               <li><NavLink to={i18nTo`/`}>Homepage</NavLink></li>
               <li><NavLink to={i18nTo`/about-library`}>About library</NavLink></li>
             </ul></nav>
-            <Route path='/'>{({originalPath}) => <p>{originalPath}</p> }</Route>
+            <Route path={i18nRoute`/about-library`}>{({originalPath, location}) => (
+              <Trans>
+                <p>You are at {location.pathname}</p>
+                <p>Originally called {originalPath}</p>
+              </Trans>
+            ) }</Route>
           </LinguiRouter>
         </Router>
       </I18nProvider>
