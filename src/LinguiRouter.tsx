@@ -1,17 +1,19 @@
 import * as React from "react";
-import {Route as RRRoute, RouteProps, Switch as RRSwitch, SwitchProps} from "react-router";
+import {Route as RRRoute, RouteProps} from "react-router";
 import {Key, parse} from "path-to-regexp";
 import {I18n} from "@lingui/core"
 import {withI18n} from "@lingui/react";
-import {flatten} from "ramda";
 
 export type I18nPath = [string[], any[]];
 
+type RouteComponentType = React.ComponentType<RouteProps & { originalPath?: string }>;
+
 const Context = React.createContext<RouterI18n | null>(null);
 
-export const LinguiRouter = withI18n()(({i18n}: { i18n: I18n }) => (
-  <Context.Provider value={new RouterI18n(i18n, RRRoute)}/>
-));
+export const LinguiRouter = withI18n()(
+  ({i18n, routeComponent = RRRoute, children}: { i18n: I18n, routeComponent?: RouteComponentType, children: React.ReactNode }) => (
+    <Context.Provider value={new RouterI18n(i18n, routeComponent)}>{children}</Context.Provider>
+  ));
 
 export const WithLinguiRouter = ({children}: { children: (routerI18n: RouterI18n) => React.ReactNode }) => (
   <Context.Consumer>{(routerI18n) => {
@@ -22,8 +24,9 @@ export const WithLinguiRouter = ({children}: { children: (routerI18n: RouterI18n
   }}</Context.Consumer>
 );
 
+
 export class RouterI18n {
-  constructor(public i18n: I18n, public RouteComponent: React.ComponentType<RouteProps & {originalPath?: string}>) {
+  constructor(public i18n: I18n, public RouteComponent: RouteComponentType) {
   }
 
   private routeCache = {};
@@ -66,39 +69,4 @@ export class RouterI18n {
     return '/' + this.i18n.language + this.i18n._(catalogString, values);
   }
 }
-
-export const Route = ({path, ...otherProps}: RouteProps) => (<WithLinguiRouter>{(routerI18n) => {
-  if (Array.isArray(path)) {
-    throw RangeError('Array paths not supported');
-  }
-
-  const Route = routerI18n.RouteComponent;
-
-  return (
-    <React.Fragment>
-      <Route path={routerI18n.route(path)} originalPath={path} {...otherProps}/>
-      <Route path={path} originalPath={path} {...otherProps}/>
-    </React.Fragment>
-  );
-}}</WithLinguiRouter>);
-
-export const Switch = ({children}: SwitchProps) => (<WithLinguiRouter>{(routerI18n) => (
-  <RRSwitch>{
-    flatten(
-      React.Children.map(children, (el, index) => {
-        if (React.isValidElement<{ path?: string }>(el)) {
-          const {path, ...otherProps} = el.props;
-          const Route = routerI18n.RouteComponent;
-
-          return [
-            <Route path={routerI18n.route(path)} originalPath={path} key={index + '-local'} {...otherProps}/>,
-            <Route path={path} originalPath={path} key={index} {...otherProps}/>
-          ];
-        } else {
-          return el;
-        }
-      })
-    )
-  }</RRSwitch>
-)}</WithLinguiRouter>);
 
