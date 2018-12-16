@@ -90,8 +90,7 @@
   },
   "babel": {
     "presets": [
-      "react-app",
-      "@lingui/babel-preset-react"
+      "react-app"
     ],
     "plugins": [
       "lingui-router/babel"
