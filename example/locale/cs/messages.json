@@ -1,0 +1,60 @@
+{
+  "/": {
+    "translation": "/",
+    "origin": [
+      [
+        "src/App.js",
+        null
+      ]
+    ]
+  },
+  "/about-library": {
+    "translation": "/o-knihovne",
+    "origin": [
+      [
+        "src/App.js",
+        null
+      ],
+      [
+        "src/App.js",
+        null
+      ]
+    ]
+  },
+  "<0>You are at {0}</0><1>Originally called {originalPath}</1>": {
+    "translation": "<0>Nacházíte se na: {0}</0><1>Původní cesta: {originalPath}</1>",
+    "origin": [
+      [
+        "src/App.js",
+        24
+      ]
+    ]
+  },
+  "About library": {
+    "translation": "O knihovně",
+    "origin": [
+      [
+        "src/App.js",
+        21
+      ]
+    ]
+  },
+  "Homepage": {
+    "translation": "Domů",
+    "origin": [
+      [
+        "src/App.js",
+        20
+      ]
+    ]
+  },
+  "Welcome to <0>lingui-router</0>!": {
+    "translation": "Vítejte v <0>lingui-router</0>!",
+    "origin": [
+      [
+        "src/App.js",
+        18
+      ]
+    ]
+  }
+}

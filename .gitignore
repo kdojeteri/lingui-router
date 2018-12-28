@@ -6,9 +6,8 @@ node_modules
 
 # builds
 build
+!build/dist
 dist
-babel.js
-babel.es.js
 .rpt2_cache
 
 # misc

@@ -7,7 +7,7 @@ import {
 } from "react-router";
 import * as React from "react";
 import {RouterI18n, WithLinguiRouter} from "./LinguiRouter";
-import {flatten} from 'ramda';
+import flatten from 'ramda/es/flatten';
 
 export interface RouteProps extends RRRouteProps {
   component?: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;

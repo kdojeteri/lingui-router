@@ -35,45 +35,5 @@ export default [
       }),
       commonjs()
     ]
-  },
-  {
-    input: 'src/babel/index.js',
-    output: [
-      {
-        file: 'dist/babel/index.js',
-        format: 'cjs',
-        exports: 'named',
-        sourcemap: true
-      },
-      {
-        file: 'dist/babel/index.es.js',
-        format: 'es',
-        exports: 'named',
-        sourcemap: true
-      },
-      { // For development purposes (also mentioned in .gitignore)
-        file: 'babel.js',
-        format: 'cjs',
-        exports: 'named',
-        sourcemap: true
-      },
-      { // For development purposes (also mentioned in .gitignore)
-        file: 'babel.es.js',
-        format: 'es',
-        exports: 'named',
-        sourcemap: true
-      },
-    ],
-    plugins: [
-      external(),
-      url(),
-      resolve(),
-      typescript({
-        rollupCommonJSResolveHack: true,
-        clean: true,
-        tsconfigOverrides: { declaration: false }
-      }),
-      commonjs()
-    ]
   }
 ]
