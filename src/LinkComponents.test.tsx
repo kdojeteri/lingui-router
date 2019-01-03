@@ -20,7 +20,27 @@ describe('Link', () => {
     expect(app.find('a').prop('href')).toEqual('/cs/test');
   });
 
-  it('should translate plain links');
+  it('should translate plain links', () => {
+    const app = mount(
+      <I18nProvider language={'en'} catalogs={{"en": {"messages": {"/test": "/success"}}}}>
+        <Router history={createMemoryHistory()}>
+          <LinguiRouter><Link to={i18nTo`/test`}>foo</Link></LinguiRouter>
+        </Router>
+      </I18nProvider>
+    );
 
-  it('should translate links with path parameters');
+    expect(app.find('a').prop('href')).toEqual('/en/success');
+  });
+
+  it('should translate links with path parameters', () => {
+    const app = mount(
+      <I18nProvider language={'en'} catalogs={{"en": {"messages": {"/test-param-id/{0}": "/successful-id-test/{0}"}}}}>
+        <Router history={createMemoryHistory()}>
+          <LinguiRouter><Link to={i18nTo`/test-param-id/${10}`}>foo</Link></LinguiRouter>
+        </Router>
+      </I18nProvider>
+    );
+
+    expect(app.find('a').prop('href')).toEqual('/en/successful-id-test/10');
+  });
 });
