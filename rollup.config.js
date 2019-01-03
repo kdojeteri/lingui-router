@@ -33,7 +33,11 @@ export default [
         rollupCommonJSResolveHack: true,
         clean: true
       }),
-      commonjs()
+      commonjs({
+        namedExports: {
+          "node_modules/ramda/index.js": "flatten"
+        }
+      })
     ]
   }
 ]

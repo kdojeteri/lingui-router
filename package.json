@@ -1,6 +1,6 @@
 {
   "name": "lingui-router",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Add internationalization to React Router using https://lingui.js.org",
   "author": "peping",
   "license": "MIT",
@@ -29,7 +29,7 @@
     "deploy": "gh-pages -d example/build"
   },
   "dependencies": {
-    "ramda": "^0.2.0"
+    "ramda": "^0.26.1"
   },
   "peerDependencies": {
     "prop-types": "^15.5.4",
