@@ -7,7 +7,7 @@ import {
 } from "react-router";
 import * as React from "react";
 import {RouterI18n, WithLinguiRouter} from "./LinguiRouter";
-import flatten from 'ramda/es/flatten';
+import {flatten} from 'ramda';
 
 export interface RouteProps extends RRRouteProps {
   component?: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
@@ -36,7 +36,7 @@ function renderRoute(routerI18n: RouterI18n, {path, component, render, children,
 
   return [
     <RRRoute path={routerI18n.route(path)} component={NewComponent} key={`${key || 'route'}-i18n`} {...otherProps}/>,
-    <RRRoute path={routerI18n.route(path)} component={NewComponent} key={key || 'route'} {...otherProps}/>,
+    <RRRoute path={path} component={NewComponent} key={key || 'route'} {...otherProps}/>,
   ];
 }
 
