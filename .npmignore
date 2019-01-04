@@ -1,0 +1,2 @@
+# This file is empty.
+# It serves to override .gitignore, which would otherwise tell npm to ignore dist during npm publish
