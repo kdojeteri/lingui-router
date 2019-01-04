@@ -39,5 +39,28 @@ export default [
         }
       })
     ]
+  },
+  {
+    input: 'src/babel/index.js',
+    output: [
+      {
+        file: "dist/babel/index.js",
+        format: 'cjs',
+        exports: 'named',
+        sourcemap: true
+      },
+      {
+        file: "dist/babel/index.es.js",
+        format: 'es',
+        exports: 'named',
+        sourcemap: true
+      },
+    ],
+    plugins: [
+      external(),
+      url(),
+      resolve(),
+      commonjs()
+    ]
   }
 ]
