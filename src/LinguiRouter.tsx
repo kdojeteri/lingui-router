@@ -46,7 +46,7 @@ export class RouterI18n {
           return item;
         } else {
           placeholders.push(item);
-          return `{${placeholders.length - 1}}`;
+          return `${item.delimiter}{${placeholders.length - 1}}`;
         }
       }
     ).join('');
@@ -55,7 +55,11 @@ export class RouterI18n {
     // Format with placeholder names (/kurz/:courseSlug/lekce/:lessonId/:lessonSlug)
     // Prepend with language and return (/cs/kurz/:courseSlug/lekce/:lessonId/:lessonSlug)
 
-    return '/' + this.i18n.language + this.i18n._(catalogString, placeholders.map(key => key.delimiter + ':' + key.name));
+    let v = '/' + this.i18n.language + this.i18n._(catalogString, placeholders.map(key => ':' + key.name));
+    if ('/testing-path/{0}' in this.i18n.messages) {
+      console.log(catalogString, this.i18n._(catalogString) );
+    }
+    return v;
   }
 
   link(parts: ArrayLike<string>, values: any[]): string {

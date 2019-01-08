@@ -23,10 +23,10 @@ export default class App extends Component {
                   <li><NavLink to={i18nTo`/about-library`}><Trans>About library</Trans></NavLink></li>
                 </ul>
               </nav>
-              <Route path={i18nPath`/about-library`}>{({originalPath, location}) => (
+              <Route path={i18nPath`/about-library`}>{({location}) => (
                 <Trans>
-                  <p>You are at {location.pathname}</p>
-                  <p>Originally called {originalPath}</p>
+                  <p>You are at {location.translated.pathname}</p>
+                  <p>Originally called {location.pathname}</p>
                 </Trans>
               )}</Route>
             </LinguiRouter>
