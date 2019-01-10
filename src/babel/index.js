@@ -14,7 +14,11 @@ const ExtractVisitor = {
       state.catalogStrings = new Set();
     },
     exit(_, state) {
-      const localeDirs = glob(path.join(linguiConfig.getConfig().localeDir));
+      if (!process.env.LINGUI_EXTRACT) {
+        return;
+      }
+
+      const localeDirs = glob(path.join(linguiConfig.getConfig().localeDir,'*'));
       for (let dir of localeDirs) {
         const routeCatalogFilename = path.join(dir, 'routes.json');
         const routeCatalog = (fs.accessSync(routeCatalogFilename))
