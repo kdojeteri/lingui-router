@@ -3,7 +3,7 @@ const {parse} = require('path-to-regexp');
 const linguiConfig = require('@lingui/conf');
 const glob = require('glob-promise');
 const path = require('path');
-const fs = require('fs/promises');
+const fs = require('fs').promises;
 
 const ExtractVisitor = {
   Program: {
