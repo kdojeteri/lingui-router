@@ -1,9 +1,9 @@
 const t = require('@babel/types');
 const {parse} = require('path-to-regexp');
 const linguiConfig = require('@lingui/conf');
-const glob = require('glob-promise');
+const glob = require('glob').sync;
 const path = require('path');
-const fs = require('fs').promises;
+const fs = require('fs');
 
 const ExtractVisitor = {
   Program: {
@@ -13,12 +13,12 @@ const ExtractVisitor = {
       state.parseCache = {};
       state.catalogStrings = new Set();
     },
-    async exit(_, state) {
-      const localeDirs = await glob(path.join(linguiConfig.getConfig().localeDir));
+    exit(_, state) {
+      const localeDirs = glob(path.join(linguiConfig.getConfig().localeDir));
       for (let dir of localeDirs) {
         const routeCatalogFilename = path.join(dir, 'routes.json');
-        const routeCatalog = (await fs.access(routeCatalogFilename))
-          ? JSON.parse(await fs.readFile(routeCatalogFilename).toString())
+        const routeCatalog = (fs.accessSync(routeCatalogFilename))
+          ? JSON.parse(fs.readFileSync(routeCatalogFilename).toString())
           : {}
         ;
 
@@ -28,7 +28,7 @@ const ExtractVisitor = {
           }
         }
 
-        await fs.writeFile(JSON.stringify(routeCatalog, null, 2));
+        fs.writeFileSync(routeCatalogFilename, JSON.stringify(routeCatalog, null, 2));
       }
     }
   },
