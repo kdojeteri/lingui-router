@@ -21,7 +21,6 @@ export interface RouteProps extends RRRouteProps {
 
 export interface LinguiRouterLocation extends H.Location<any> {
   translated: H.Location<any>;
-
 }
 
 export interface RouteComponentProps<T> extends RRRouteComponentProps<T> {

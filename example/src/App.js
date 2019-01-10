@@ -19,11 +19,11 @@ export default class App extends Component {
               <h1><Trans>Welcome to <code>lingui-router</code>!</Trans></h1>
               <nav>
                 <ul>
-                  <li><NavLink to={i18nTo`/`}><Trans>Homepage</Trans></NavLink></li>
-                  <li><NavLink to={i18nTo`/about-library`}><Trans>About library</Trans></NavLink></li>
+                  <li><NavLink to={"/"}><Trans>Homepage</Trans></NavLink></li>
+                  <li><NavLink to={"/about-library"}><Trans>About library</Trans></NavLink></li>
                 </ul>
               </nav>
-              <Route path={i18nPath`/about-library`}>{({location}) => (
+              <Route path={"/about-library"}>{({location}) => (
                 <Trans>
                   <p>You are at {location.translated.pathname}</p>
                   <p>Originally called {location.pathname}</p>

@@ -4,7 +4,6 @@ import {Router} from "react-router";
 import createMemoryHistory from "history/createMemoryHistory";
 import {LinguiRouter} from "./LinguiRouter";
 import {Link} from "./LinkComponents";
-import {i18nTo} from "./templateTags";
 import * as React from "react";
 
 describe('Link', () => {
@@ -12,7 +11,7 @@ describe('Link', () => {
     const app = mount(
       <I18nProvider language={'cs'}>
         <Router history={createMemoryHistory()}>
-          <LinguiRouter><Link to={i18nTo`/test`}>foo</Link></LinguiRouter>
+          <LinguiRouter catalogs={{cs: {'/test': '/test'}}}><Link to={`/test`}>foo</Link></LinguiRouter>
         </Router>
       </I18nProvider>
     );
@@ -22,9 +21,9 @@ describe('Link', () => {
 
   it('should translate plain links', () => {
     const app = mount(
-      <I18nProvider language={'en'} catalogs={{"en": {"messages": {"/test": "/success"}}}}>
+      <I18nProvider language={'en'}>
         <Router history={createMemoryHistory()}>
-          <LinguiRouter><Link to={i18nTo`/test`}>foo</Link></LinguiRouter>
+          <LinguiRouter catalogs={{en: {'/test': '/success'}}}><Link to={`/test`}>foo</Link></LinguiRouter>
         </Router>
       </I18nProvider>
     );
@@ -34,9 +33,9 @@ describe('Link', () => {
 
   it('should translate links with path parameters', () => {
     const app = mount(
-      <I18nProvider language={'en'} catalogs={{"en": {"messages": {"/test-param-id/{0}": "/successful-id-test/{0}"}}}}>
+      <I18nProvider language={'en'}>
         <Router history={createMemoryHistory()}>
-          <LinguiRouter><Link to={i18nTo`/test-param-id/${10}`}>foo</Link></LinguiRouter>
+          <LinguiRouter catalogs={{en: {'/test-param-id/:id': '/successful-id-test/:id'}}}><Link to={`/test-param-id/${10}`}>foo</Link></LinguiRouter>
         </Router>
       </I18nProvider>
     );

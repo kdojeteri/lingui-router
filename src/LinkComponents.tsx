@@ -7,30 +7,30 @@ import {
   RedirectProps as RRRedirectProps
 } from "react-router-dom";
 import * as React from "react";
-import {I18nPath, WithLinguiRouter} from "./LinguiRouter";
+import {WithLinguiRouter} from "./LinguiRouter";
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
 export interface LinkProps extends Omit<RRLinkProps, "to"> {
-  to: string | I18nPath
+  to: string
 }
 
 export const Link = ({to, ...otherProps}: LinkProps) => (<WithLinguiRouter>{router => (
-  <RRLink to={typeof to === 'string' ? to : router.link(to[0], to[1])} {...otherProps}/>
+  <RRLink to={router.link(to)} {...otherProps}/>
 )}</WithLinguiRouter>);
 
 export interface NavLinkProps extends Omit<RRNavLinkProps, "to"> {
-  to: string | I18nPath
+  to: string
 }
 
 export const NavLink = ({to, ...otherProps}: NavLinkProps) => (<WithLinguiRouter>{router => (
-  <RRNavLink to={typeof to === 'string' ? to : router.link(to[0], to[1])} {...otherProps}/>
+  <RRNavLink to={router.link(to)} {...otherProps}/>
 )}</WithLinguiRouter>);
 
 export interface RedirectProps extends Omit<RRRedirectProps, "to"> {
-  to: string | I18nPath
+  to: string
 }
 
 export const Redirect = ({to, ...otherProps}: RedirectProps) => (<WithLinguiRouter>{router => (
-  <RRRedirect to={typeof to === 'string' ? to : router.link(to[0], to[1])} {...otherProps}/>
+  <RRRedirect to={router.link(to)} {...otherProps}/>
 )}</WithLinguiRouter>);

@@ -1,19 +1,23 @@
 import * as React from "react";
-import {Route as RRRoute, RouteProps} from "react-router";
-import {Key, parse} from "path-to-regexp";
-import {I18n} from "@lingui/core"
-import {withI18n} from "@lingui/react";
+import {Key, compile} from "path-to-regexp";
+// @ts-ignore
+import pathToRegexp = require("path-to-regexp");
+import {I18n} from "@lingui/react";
 
-export type I18nPath = [string[], any[]];
-
-type RouteComponentType = React.ComponentType<RouteProps & { originalPath?: string }>;
+export type I18nPath = string;
 
 const Context = React.createContext<RouterI18n | null>(null);
 
-export const LinguiRouter = withI18n()(
-  ({i18n, routeComponent = RRRoute, children}: { i18n: I18n, routeComponent?: RouteComponentType, children: React.ReactNode }) => (
-    <Context.Provider value={new RouterI18n(i18n, routeComponent)}>{children}</Context.Provider>
-  ));
+interface LinguiRouterProps {
+  catalogs: { [locale: string]: object },
+  children: React.ReactNode
+}
+
+export const LinguiRouter = ({catalogs, children}: LinguiRouterProps) => (
+  <I18n>{({i18n}) => (
+    <Context.Provider value={new RouterI18n(i18n.language, catalogs)}>{children}</Context.Provider>
+  )}</I18n>
+);
 
 export const WithLinguiRouter = ({children}: { children: (routerI18n: RouterI18n) => React.ReactNode }) => (
   <Context.Consumer>{(routerI18n) => {
@@ -25,52 +29,95 @@ export const WithLinguiRouter = ({children}: { children: (routerI18n: RouterI18n
 );
 
 
+function RRMatch(pattern: string, path: string): object | null {
+  const keys: Key[] = [];
+  const regexp = pathToRegexp(pattern, keys);
+  const values = regexp.exec(path);
+
+  if (!values) {
+    return null;
+  }
+
+  const params = {};
+  for (let [index, key] of keys.entries()) {
+    params[key.name] = values[index + 1];
+  }
+
+  return params;
+}
+
 export class RouterI18n {
-  constructor(public i18n: I18n, public RouteComponent: RouteComponentType) {
+  constructor(public locale: string, public routeCatalogs: { [locale: string]: object }) {
   }
 
-  private routeCache = {};
+  get currentCatalog() {
+    return this.routeCatalogs[this.locale]
+  }
 
-  route(string?: string): string {
-    // Take a string like /course/:courseSlug/lesson/:lessonId/:lessonSlug
-    let parsedPath = this.routeCache[string || ''];
-    if (!parsedPath) {
-      this.routeCache[string || ''] = parsedPath = parse(string || '');
+  /**
+   * Translate route path for the current locale
+   * @param path
+   */
+  route(path?: string): string {
+    return '/' + this.locale + (this.currentCatalog[path || ''] || path || '');
+  }
+
+  /**
+   * Translate link template literal for the current locale
+   *
+   * @param path
+   */
+  link(path: string): string {
+    const found = this.matchCatalogKey(path);
+
+    if (!found) {
+      return path;
     }
 
-    // Turn it into catalog string like /course/{0}/lesson/{1}/{2}
-    let placeholders: Key[] = [];
-    const catalogString = parsedPath.map(
-      function (item: any) {
-        if (typeof item === "string") {
-          return item;
-        } else {
-          placeholders.push(item);
-          return `${item.delimiter}{${placeholders.length - 1}}`;
-        }
+    const value = this.currentCatalog[found.key] || found.key;
+
+    return '/' + this.locale + compile(value)(found.match);
+  }
+
+  untranslateLocation(pathname: string) {
+    // detect language
+    const language = Object.keys(this.routeCatalogs).find(lang => pathname.startsWith('/' + lang));
+
+    console.log('language:', language);
+
+    if (!language) {
+      return pathname;
+    }
+
+    const found = this.matchCatalogValue(pathname.substr(('/' + language).length), this.routeCatalogs[language]);
+
+    if (!found) {
+      return pathname;
+    }
+
+    return compile(found.key)(found.match);
+  }
+
+  matchCatalogKey(untranslatedPath: string, catalog = this.currentCatalog): { key: string, match: object } | null {
+    for (let key of Object.keys(catalog)) {
+      const match = RRMatch(key, untranslatedPath);
+      if (match) {
+        return {key, match};
       }
-    ).join('');
-
-    // Take translation from i18n._(...) (/kurz/{0}/lekce/{1}/{2})
-    // Format with placeholder names (/kurz/:courseSlug/lekce/:lessonId/:lessonSlug)
-    // Prepend with language and return (/cs/kurz/:courseSlug/lekce/:lessonId/:lessonSlug)
-
-    let v = '/' + this.i18n.language + this.i18n._(catalogString, placeholders.map(key => ':' + key.name));
-    if ('/testing-path/{0}' in this.i18n.messages) {
-      console.log(catalogString, this.i18n._(catalogString) );
     }
-    return v;
+
+    return null;
   }
 
-  link(parts: ArrayLike<string>, values: any[]): string {
-    // Take a string template literal like `/course/${course.slug}/lesson/${uuidToBase64(lesson.uuid)}/${slugify(lesson.name)}`
-    // Turn it into catalog string like /course/{0}/lesson/{1}/{2}
-    const catalogString = Array.from(parts).map((part, i, arr) => (i === arr.length - 1) ? part : `${part}{${i}}`).join('');
+  matchCatalogValue(translatedPath: string, catalog = this.currentCatalog): { key: string, match: object } | null {
+    for (let [key, value] of Object.entries(catalog)) {
+      const match = RRMatch(value, translatedPath);
+      if (match) {
+        return {key, match};
+      }
+    }
 
-    // Take translation from i18n._(...) (/kurz/{0}/lekce/{1}/{2})
-    // Format with values names (/kurz/linux/lekce/8iJ22-BAF349/zaciname)
-    // Prepend with language and return (/cs/kurz/linux/lekce/8iJ22-BAF349/zaciname)
-    return '/' + this.i18n.language + this.i18n._(catalogString, values);
+    return null;
   }
 }
 

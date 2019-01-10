@@ -4,7 +4,6 @@ import createMemoryHistory from "history/createMemoryHistory";
 import * as React from "react";
 import {mount} from "enzyme";
 import {Route} from "./RouteComponents";
-import {i18nPath} from "./templateTags";
 import {LinguiRouter} from "./LinguiRouter";
 
 
@@ -15,9 +14,9 @@ describe('Route', () => {
 
     const app = mount(
       <I18nProvider language={'cs'}>
-        <LinguiRouter>
+        <LinguiRouter catalogs={{cs: {'/foo': '/foo'}}}>
           <Router history={history}>
-            <Route path={i18nPath`/foo`} render={() => <span>Hello!</span>}/>
+            <Route path={"/foo"} render={() => <span>Hello!</span>}/>
           </Router>
         </LinguiRouter>
       </I18nProvider>
@@ -33,9 +32,9 @@ describe('Route', () => {
 
     const app = mount(
       <I18nProvider language={'cs'}>
-        <LinguiRouter>
+        <LinguiRouter catalogs={{cs: {'/foo': '/foo'}}}>
           <Router history={history}>
-            <Route path={i18nPath`/foo`} render={() => <span>Hello!</span>}/>
+            <Route path={"/foo"} render={() => <span>Hello!</span>}/>
           </Router>
         </LinguiRouter>
       </I18nProvider>
@@ -50,9 +49,9 @@ describe('Route', () => {
 
     const app = mount(
       <I18nProvider language={'cs'}>
-        <LinguiRouter>
+        <LinguiRouter catalogs={{cs: {'/foo': '/foo'}}}>
           <Router history={history}>
-            <Route path={i18nPath`/foo`} render={() => <span>Hello!</span>}/>
+            <Route path={"/foo"} render={() => <span>Hello!</span>}/>
           </Router>
         </LinguiRouter>
       </I18nProvider>
@@ -68,10 +67,10 @@ describe('Route', () => {
     const routeFunction = jest.fn(() => null);
 
     mount(
-      <I18nProvider language={'cs'} catalogs={{cs: {messages: {'/testing-path': '/testovaci-cesta'}}}}>
-        <LinguiRouter>
+      <I18nProvider language={'cs'} >
+        <LinguiRouter catalogs={{cs: {'/testing-path': '/testovaci-cesta'}}}>
           <Router history={history}>
-            <Route path={i18nPath`/testing-path`} render={routeFunction}/>
+            <Route path={"/testing-path"} render={routeFunction}/>
           </Router>
         </LinguiRouter>
       </I18nProvider>
@@ -90,10 +89,10 @@ describe('Route', () => {
     const routeFunction = jest.fn(() => null);
 
     mount(
-      <I18nProvider language={'cs'} catalogs={{cs: {messages: {'/testing-path/{0}': a => ["/testovaci-cesta/",a("0")]}}}}>
-        <LinguiRouter>
+      <I18nProvider language={'cs'}>
+        <LinguiRouter catalogs={{cs: {'/testing-path/:param': '/testovaci-cesta/:param'}}}>
           <Router history={history}>
-            <Route path={i18nPath`/testing-path/:param`} render={routeFunction}/>
+            <Route path={"/testing-path/:param"} render={routeFunction}/>
           </Router>
         </LinguiRouter>
       </I18nProvider>
