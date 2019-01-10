@@ -83,16 +83,16 @@ export class RouterI18n {
     // detect language
     const language = Object.keys(this.routeCatalogs).find(lang => pathname.startsWith('/' + lang));
 
-    console.log('language:', language);
-
     if (!language) {
       return pathname;
     }
 
-    const found = this.matchCatalogValue(pathname.substr(('/' + language).length), this.routeCatalogs[language]);
+    const lookupValue = pathname.substr(('/' + language).length);
+
+    const found = this.matchCatalogValue(lookupValue, this.routeCatalogs[language]);
 
     if (!found) {
-      return pathname;
+      return lookupValue;
     }
 
     return compile(found.key)(found.match);
