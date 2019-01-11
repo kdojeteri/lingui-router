@@ -71,7 +71,7 @@ export class RouterI18n {
     const found = this.matchCatalogKey(path);
 
     if (!found) {
-      return path;
+      return '/' + this.locale + path;
     }
 
     const value = this.currentCatalog[found.key] || found.key;
