@@ -71,7 +71,13 @@ export class RouterI18n {
     const found = this.matchCatalogKey(path);
 
     if (!found) {
-      return '/' + this.locale + path;
+      const language = Object.keys(this.routeCatalogs).find(lang => path.startsWith('/' + lang));
+
+      if (language) {
+        return path
+      } else {
+        return '/' + this.locale + path;
+      }
     }
 
     const value = this.currentCatalog[found.key] || found.key;
