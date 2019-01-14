@@ -18,13 +18,20 @@ const ExtractVisitor = {
         return;
       }
 
-      const localeDirs = glob(path.join(linguiConfig.getConfig().localeDir,'*'));
+      const localeDirs = glob(path.join(linguiConfig.getConfig().localeDir, '*'))
+        .filter(p => path.basename(p) !== '_build');
+
       for (let dir of localeDirs) {
         const routeCatalogFilename = path.join(dir, 'routes.json');
-        const routeCatalog = (fs.accessSync(routeCatalogFilename))
-          ? JSON.parse(fs.readFileSync(routeCatalogFilename).toString())
-          : {}
-        ;
+        const routeCatalog = (() => {
+          let catalogString;
+          try {
+            catalogString = fs.readFileSync(routeCatalogFilename).toString();
+          } catch (e) {
+            return {}
+          }
+          return JSON.parse(catalogString);
+        })();
 
         for (let key of state.catalogStrings.values()) {
           if (!(key in routeCatalog)) {
