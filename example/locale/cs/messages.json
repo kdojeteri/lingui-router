@@ -6,7 +6,8 @@
         "src/App.js",
         null
       ]
-    ]
+    ],
+    "obsolete": true
   },
   "/about-library": {
     "translation": "/o-knihovne",
@@ -19,6 +20,16 @@
         "src/App.js",
         null
       ]
+    ],
+    "obsolete": true
+  },
+  "<0>You are at {0}</0><1>Originally called {1}</1>": {
+    "translation": "",
+    "origin": [
+      [
+        "src/App.js",
+        27
+      ]
     ]
   },
   "<0>You are at {0}</0><1>Originally called {originalPath}</1>": {
@@ -28,14 +39,15 @@
         "src/App.js",
         24
       ]
-    ]
+    ],
+    "obsolete": true
   },
   "About library": {
     "translation": "O knihovně",
     "origin": [
       [
         "src/App.js",
-        21
+        23
       ]
     ]
   },
@@ -44,7 +56,7 @@
     "origin": [
       [
         "src/App.js",
-        20
+        22
       ]
     ]
   },
@@ -53,7 +65,7 @@
     "origin": [
       [
         "src/App.js",
-        18
+        19
       ]
     ]
   }

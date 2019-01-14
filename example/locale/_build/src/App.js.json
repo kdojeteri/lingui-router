@@ -3,15 +3,7 @@
     "origin": [
       [
         "src/App.js",
-        18
-      ]
-    ]
-  },
-  "/": {
-    "origin": [
-      [
-        "src/App.js",
-        null
+        19
       ]
     ]
   },
@@ -19,19 +11,7 @@
     "origin": [
       [
         "src/App.js",
-        20
-      ]
-    ]
-  },
-  "/about-library": {
-    "origin": [
-      [
-        "src/App.js",
-        null
-      ],
-      [
-        "src/App.js",
-        null
+        22
       ]
     ]
   },
@@ -39,15 +19,15 @@
     "origin": [
       [
         "src/App.js",
-        21
+        23
       ]
     ]
   },
-  "<0>You are at {0}</0><1>Originally called {originalPath}</1>": {
+  "<0>You are at {0}</0><1>Originally called {1}</1>": {
     "origin": [
       [
         "src/App.js",
-        24
+        27
       ]
     ]
   }
