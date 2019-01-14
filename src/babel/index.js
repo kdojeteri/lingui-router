@@ -67,7 +67,7 @@ const ExtractVisitor = {
 
     if (state.imports['Route'] && identifier.name === state.imports['Route']) {
       // find path attribute, else bail
-      const pathAttribute = path.node.attributes.find(attr => attr.name.name === 'path');
+      const pathAttribute = path.node.attributes.find(attr => (attr.name || {}).name === 'path');
 
       if (!pathAttribute) {
         return;
