@@ -1,7 +1,6 @@
 import {
-  Route as RRRoute,
+  Route as RRRoute, RouteChildrenProps,
   RouteComponentProps as RRRouteComponentProps,
-  RouteProps as RRRouteProps,
   Switch as RRSwitch,
   SwitchProps
 } from "react-router";
@@ -11,20 +10,39 @@ import {flatten} from 'ramda';
 import {compile} from "path-to-regexp";
 import * as H from "history";
 
-export interface RouteProps extends RRRouteProps {
+export interface RouteProps {
+  // FIXME: copied over from react-router types, because portal keeps getting this error:
+  // ERROR in [at-loader] ./node_modules/lingui-router/dist/RouteComponents.d.ts:4:18
+  //     TS2430: Interface 'import("C:/Users/peping/Documents/projects/portal-front/node_modules/lingui-router/dist/RouteComponents").RouteProps' incorrectl
+  // y extends interface 'import("C:/Users/peping/Documents/projects/portal-front/node_modules/@types/react-router/index").RouteProps'.
+  //   Types of property 'render' are incompatible.
+  //     Type '((props: RouteComponentProps<any>) => ReactNode) | undefined' is not assignable to type '((props: RouteComponentProps<any, StaticContext, any
+  // >) => ReactNode) | undefined'.
+  //       Type '(props: RouteComponentProps<any>) => ReactNode' is not assignable to type '(props: RouteComponentProps<any, StaticContext, any>) => ReactNo
+  // de'.
+  //         Types of parameters 'props' and 'props' are incompatible.
+  //           Type 'RouteComponentProps<any, StaticContext, any>' is not assignable to type 'RouteComponentProps<any>'.
+  //             Types of property 'location' are incompatible.
+  //               Type 'Location<any>' is not assignable to type 'LinguiRouterLocation'.
+  //                 Property 'translated' is missing in type 'Location<any>'.
+  location?: H.Location;
   component?: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
   render?: ((props: RouteComponentProps<any>) => React.ReactNode);
-  children?: ((props: RouteComponentProps<any>) => React.ReactNode) | React.ReactNode;
+  children?: ((props: RouteChildrenProps<any>) => React.ReactNode) | React.ReactNode;
+  path?: string | string[];
+  exact?: boolean;
+  sensitive?: boolean;
+  strict?: boolean;
 
   key?: string;
 }
 
-export interface LinguiRouterLocation extends H.Location<any> {
-  translated: H.Location<any>;
-}
-
 export interface RouteComponentProps<T> extends RRRouteComponentProps<T> {
   location: LinguiRouterLocation
+}
+
+export interface LinguiRouterLocation extends H.Location<any> {
+  translated: H.Location<any>;
 }
 
 function renderRoute(routerI18n: RouterI18n, {path, component, render, children, key, ...otherProps}: RouteProps) {

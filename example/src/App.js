@@ -21,7 +21,7 @@ export default class App extends Component {
         <RRRoute path="/:locale?">{({match: {params: {locale}}}) => (
           <I18nProvider language={locale || 'cs'} catalogs={{cs, en, es, fr}}>
             <LinguiRouter catalogs={{cs: csRoutes, en: enRoutes, es: esRoutes, fr: frRoutes}}>
-              <h1>< Trans> Welcome to <code>lingui-router</code>!</Trans></h1>
+              <h1><Trans> Welcome to <code>lingui-router</code>!</Trans></h1>
               <nav>
                 <ul>
                   <li><NavLink to={"/"}><Trans>Homepage</Trans></NavLink></li>
