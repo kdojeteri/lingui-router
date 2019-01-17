@@ -1,12 +1,13 @@
 import {
-  Route as RRRoute, RouteChildrenProps,
+  Route as RRRoute,
+  RouteChildrenProps,
   RouteComponentProps as RRRouteComponentProps,
   Switch as RRSwitch,
   SwitchProps
 } from "react-router";
 import * as React from "react";
 import {RouterI18n, WithLinguiRouter} from "./LinguiRouter";
-import {flatten} from 'ramda';
+import {equals, flatten} from 'ramda';
 import {compile} from "path-to-regexp";
 import * as H from "history";
 
@@ -56,6 +57,7 @@ function renderRoute(routerI18n: RouterI18n, {path, component, render, children,
 
 
   const Component = a || b || c || undefined;
+
   const NewComponent = (routeComponentProps: RRRouteComponentProps) => {
     if (!Component) {
       return null;
@@ -97,15 +99,49 @@ function formatRoute(path: string, params: object): string {
   return compiledPath(params);
 }
 
-export const Route = (props: RouteProps) => (
-  <WithLinguiRouter>{(routerI18n) => <RRSwitch>{renderRoute(routerI18n, props)}</RRSwitch>}</WithLinguiRouter>);
+export class Route extends React.Component<RouteProps> {
+  prevProps = this.props;
+  prevRouter: RouterI18n | null = null;
+  route: any = null;
 
-export const Switch = ({children}: SwitchProps) => (<WithLinguiRouter>{(routerI18n) => (
-  <RRSwitch>{flatten(
-    React.Children.map(children, (el, index) =>
-      React.isValidElement(el)
-        ? renderRoute(routerI18n, {...el.props, key: index.toString()})
-        : el
-    )
-  )}</RRSwitch>
-)}</WithLinguiRouter>);
+  render() {
+    return <WithLinguiRouter>{(routerI18n) => {
+      let route;
+      if (!equals(this.props, this.prevProps) || !equals(this.prevRouter, routerI18n)) {
+        this.route = route = renderRoute(routerI18n, this.props);
+        this.prevProps = this.props;
+        this.prevRouter = routerI18n;
+      }
+        return <RRSwitch>{route}</RRSwitch>;
+    }}</WithLinguiRouter>;
+  }
+}
+
+export class Switch extends React.Component<SwitchProps> {
+  prevChildren = this.props.children;
+  routeMap: any = null;
+  prevRouter: RouterI18n | null = null;
+
+  render() {
+    return (
+      <WithLinguiRouter>{(routerI18n) => {
+        let routeMap = this.routeMap;
+        if (!equals(this.props.children, this.prevChildren) || !equals(routerI18n, this.prevRouter)) {
+          this.routeMap = routeMap = flatten(
+            React.Children.map(this.props.children, (el, index) =>
+              React.isValidElement(el)
+                ? renderRoute(routerI18n, {...el.props, key: index.toString()})
+                : el
+            )
+          );
+          this.prevChildren = this.props.children;
+          this.prevRouter = routerI18n;
+        }
+
+        return (
+          <RRSwitch>{routeMap}</RRSwitch>
+        );
+      }}</WithLinguiRouter>
+    );
+  }
+}
