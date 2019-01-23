@@ -2,6 +2,7 @@ import {
   Route as RRRoute,
   RouteChildrenProps,
   RouteComponentProps as RRRouteComponentProps,
+  StaticContext,
   Switch as RRSwitch,
   SwitchProps
 } from "react-router";
@@ -38,12 +39,12 @@ export interface RouteProps {
   key?: string;
 }
 
-export interface RouteComponentProps<T> extends RRRouteComponentProps<T> {
-  location: LinguiRouterLocation
+export interface RouteComponentProps<T = any, S = H.LocationState> extends RRRouteComponentProps<T, StaticContext, S> {
+  location: LinguiRouterLocation<S>
 }
 
-export interface LinguiRouterLocation extends H.Location<any> {
-  translated: H.Location<any>;
+export interface LinguiRouterLocation<T = H.LocationState> extends H.Location<T> {
+  translated: H.Location<T>;
 }
 
 function renderRoute(routerI18n: RouterI18n, {path, component, render, children, key, ...otherProps}: RouteProps) {
