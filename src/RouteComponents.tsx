@@ -70,7 +70,8 @@ function renderRoute(routerI18n: RouterI18n, {path, component, render, children,
       ...routeComponentProps,
       match: {
         ...routeComponentProps.match,
-        path: untranslatedPath
+        path: untranslatedPath,
+        url: untranslatedPathname
       },
       location: {
         ...routeComponentProps.location,
