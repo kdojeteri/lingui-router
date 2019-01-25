@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Key, compile} from "path-to-regexp";
-import * as pathToRegexp from "path-to-regexp";
+import pathToRegexp from "path-to-regexp";
 import {I18n} from "@lingui/react";
 
 export type I18nPath = string;
@@ -67,7 +67,7 @@ export class RouterI18n {
    * @param path
    */
   link(path: string): string {
-    const url = new URL(path, "lingui-router://empty"); // use placeholder base, we're not using it anyway
+    const url = new URL(path, "https://garbage-placeholder/"); // use placeholder base, we're not using it anyway
     const found = this.matchCatalogKey(url.pathname);
 
     if (!found) {
