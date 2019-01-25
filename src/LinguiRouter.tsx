@@ -1,7 +1,6 @@
 import * as React from "react";
 import {Key, compile} from "path-to-regexp";
-// @ts-ignore
-import pathToRegexp = require("path-to-regexp");
+import * as pathToRegexp from "path-to-regexp";
 import {I18n} from "@lingui/react";
 
 export type I18nPath = string;
