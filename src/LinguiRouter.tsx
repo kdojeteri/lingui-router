@@ -1,7 +1,7 @@
 import * as React from "react";
 import {Key, compile} from "path-to-regexp";
 // @ts-ignore
-import pathToRegexp from "path-to-regexp";
+import pathToRegexp = require("path-to-regexp");
 import {I18n} from "@lingui/react";
 
 export type I18nPath = string;
@@ -68,10 +68,11 @@ export class RouterI18n {
    * @param path
    */
   link(path: string): string {
-    const found = this.matchCatalogKey(path);
+    const url = new URL(path, "lingui-router://empty"); // use placeholder base, we're not using it anyway
+    const found = this.matchCatalogKey(url.pathname);
 
     if (!found) {
-      const language = Object.keys(this.routeCatalogs).find(lang => path.startsWith('/' + lang));
+      const language = Object.keys(this.routeCatalogs).find(lang => url.pathname.startsWith('/' + lang));
 
       if (language) {
         return path
@@ -82,7 +83,9 @@ export class RouterI18n {
 
     const value = this.currentCatalog[found.key] || found.key;
 
-    return '/' + this.locale + compile(value)(found.match);
+    url.pathname = '/' + this.locale + compile(value)(found.match);
+
+    return url.pathname + url.search + url.hash;
   }
 
   untranslateLocation(pathname: string) {
