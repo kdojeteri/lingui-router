@@ -1,6 +1,6 @@
 {
   "name": "lingui-router",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Add internationalization to React Router using https://lingui.js.org",
   "author": "peping",
   "license": "MIT",
