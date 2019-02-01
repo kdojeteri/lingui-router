@@ -114,9 +114,25 @@ export class Route extends React.Component<RouteProps> {
         this.prevProps = this.props;
         this.prevRouter = routerI18n;
       }
-        return <RRSwitch>{route}</RRSwitch>;
+      return <RRSwitch>{route}</RRSwitch>;
     }}</WithLinguiRouter>;
   }
+}
+
+function isSameChild(c1: React.ReactNode, c2: React.ReactNode) {
+  if (!React.isValidElement(c1) || !React.isValidElement(c2)) {
+    return equals(c1, c2);
+  }
+
+  return equals({
+    "type": c1.type,
+    "key": c1.key,
+    "props": c1.props
+  }, {
+    "type": c2.type,
+    "key": c2.key,
+    "props": c2.props
+  })
 }
 
 export class Switch extends React.Component<SwitchProps> {
@@ -127,16 +143,21 @@ export class Switch extends React.Component<SwitchProps> {
   render() {
     return (
       <WithLinguiRouter>{(routerI18n) => {
+        const prevChildren = React.Children.toArray(this.prevChildren);
+        const children = this.props.children;
+
+        const areChildrenSame = React.Children.toArray(children).some((c, i) => !isSameChild(c, prevChildren[i]));
+
         let routeMap = this.routeMap;
-        if (!equals(this.props.children, this.prevChildren) || !equals(routerI18n, this.prevRouter)) {
+        if (!equals(routerI18n, this.prevRouter) || !areChildrenSame) {
           this.routeMap = routeMap = flatten(
-            React.Children.map(this.props.children, (el, index) =>
+            React.Children.map(children, (el, index) =>
               React.isValidElement(el)
                 ? renderRoute(routerI18n, {...el.props, key: index.toString()})
                 : el
             )
           );
-          this.prevChildren = this.props.children;
+          this.prevChildren = children;
           this.prevRouter = routerI18n;
         }
 
