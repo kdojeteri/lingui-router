@@ -146,7 +146,7 @@ export class Switch extends React.Component<SwitchProps> {
         const prevChildren = React.Children.toArray(this.prevChildren);
         const children = this.props.children;
 
-        const areChildrenSame = React.Children.toArray(children).some((c, i) => !isSameChild(c, prevChildren[i]));
+        const areChildrenSame = React.Children.toArray(children).every((c, i) => isSameChild(c, prevChildren[i]));
 
         let routeMap = this.routeMap;
         if (!equals(routerI18n, this.prevRouter) || !areChildrenSame) {
