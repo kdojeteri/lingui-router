@@ -60,14 +60,13 @@ export const Route = (props: RouteProps) => (
 
 export const Switch = ({children}: SwitchProps) => (
   <WithLinguiRouter>{(routerI18n) => (
-    <RRRoute>{(routeComponentProps) => {
+    <RRRoute>{(routeComponentProps) =>
       flatten(
         React.Children.map(children, (el) =>
           React.isValidElement(el)
             ? renderRoutePair(routerI18n, routeComponentProps, el.props)
             : el
         )
-      )
-    }}</RRRoute>
+      )}</RRRoute>
   )}</WithLinguiRouter>
 );
