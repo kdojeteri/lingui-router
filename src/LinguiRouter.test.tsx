@@ -7,7 +7,7 @@ describe('LinguiRouter', () => {
       {'cs': {'/object/:objectId/person/:personId': '/objekt/:objectId/osoba/:personId'}}
     );
 
-    expect(i18n.untranslateLocation('/cs/objekt/12/osoba/9638112')).toBe('/object/12/person/9638112');
+    expect(i18n.untranslatePathname('/cs/objekt/12/osoba/9638112')).toBe('/object/12/person/9638112');
   });
 
   it("should remove language prefix, given an unknown pathname", () => {
@@ -16,7 +16,7 @@ describe('LinguiRouter', () => {
       {'en': {}}
     );
 
-    expect(i18n.untranslateLocation('/en/object/12/person/9638112')).toBe('/object/12/person/9638112');
+    expect(i18n.untranslatePathname('/en/object/12/person/9638112')).toBe('/object/12/person/9638112');
   });
 
   it("should only try to translate pathnames, not search or hash parts", () => {

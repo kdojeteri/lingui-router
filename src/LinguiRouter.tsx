@@ -1,7 +1,8 @@
 import * as React from "react";
-import {Key, compile} from "path-to-regexp";
-import pathToRegexp from "path-to-regexp";
+import pathToRegexp, {compile, Key} from "path-to-regexp";
 import {I18n} from "@lingui/react";
+import * as H from 'history';
+import {match as RRMatch} from "react-router";
 
 export type I18nPath = string;
 
@@ -28,7 +29,7 @@ export const WithLinguiRouter = ({children}: { children: (routerI18n: RouterI18n
 );
 
 
-function RRMatch(pattern: string, path: string): object | null {
+function matchPath<T>(pattern: string, path: string): RRMatch<T> | null {
   const keys: Key[] = [];
   const regexp = pathToRegexp(pattern, keys);
   const values = regexp.exec(path);
@@ -37,12 +38,17 @@ function RRMatch(pattern: string, path: string): object | null {
     return null;
   }
 
-  const params = {};
+  const params: T = {} as T;
   for (let [index, key] of keys.entries()) {
     params[key.name] = values[index + 1];
   }
 
-  return params;
+  return {
+    params,
+    isExact: true,
+    path: path,
+    url: ""
+  };
 }
 
 export class RouterI18n {
@@ -57,8 +63,12 @@ export class RouterI18n {
    * Translate route path for the current locale
    * @param path
    */
-  route(path?: string): string {
-    return '/' + this.locale + (this.currentCatalog[path || ''] || path || '');
+  route(path: string | string[] | undefined) {
+    if (Array.isArray(path)) {
+      return path.map(path => '/' + this.locale + (this.currentCatalog[path] || path))
+    } else {
+      return '/' + this.locale + (this.currentCatalog[path || ''] || path || '');
+    }
   }
 
   /**
@@ -68,7 +78,7 @@ export class RouterI18n {
    */
   link(path: string): string {
     const url = new URL(path, "https://garbage-placeholder/"); // use placeholder base, we're not using it anyway
-    const found = this.matchCatalogKey(url.pathname);
+    const found = this.matchUntranslated(url.pathname);
 
     if (!found) {
       const language = Object.keys(this.routeCatalogs).find(lang => url.pathname.startsWith('/' + lang));
@@ -80,14 +90,22 @@ export class RouterI18n {
       }
     }
 
-    const value = this.currentCatalog[found.key] || found.key;
+    const value = this.currentCatalog[found.path] || found.path;
 
-    url.pathname = '/' + this.locale + compile(value)(found.match);
+    url.pathname = '/' + this.locale + compile(value)(found.params);
 
     return url.pathname + url.search + url.hash;
   }
 
-  untranslateLocation(pathname: string) {
+  normalizeLocation(location: H.Location): TranslatedLocation {
+    return {
+      ...location,
+      pathname: this.untranslatePathname(location.pathname),
+      original: location
+    }
+  }
+
+  untranslatePathname(pathname: string): string {
     // detect language
     const language = Object.keys(this.routeCatalogs).find(lang => pathname.startsWith('/' + lang));
 
@@ -97,31 +115,40 @@ export class RouterI18n {
 
     const lookupValue = pathname.substr(('/' + language).length);
 
-    const found = this.matchCatalogValue(lookupValue, this.routeCatalogs[language]);
+    const found = this.matchTranslated(lookupValue, this.routeCatalogs[language]);
 
     if (!found) {
       return lookupValue;
     }
 
-    return compile(found.key)(found.match);
+    return compile(found.original.path)(found.params);
   }
 
-  matchCatalogKey(untranslatedPath: string, catalog = this.currentCatalog): { key: string, match: object } | null {
+  matchUntranslated<T>(untranslatedPath: string, catalog = this.currentCatalog): TranslatedMatch<T> | null {
     for (let key of Object.keys(catalog)) {
-      const match = RRMatch(key, untranslatedPath);
+      const match = matchPath<T>(key, untranslatedPath);
       if (match) {
-        return {key, match};
+        return {
+          ...match,
+          original: match
+        };
       }
     }
 
     return null;
   }
 
-  matchCatalogValue(translatedPath: string, catalog = this.currentCatalog): { key: string, match: object } | null {
+  matchTranslated<T>(translatedPath: string, catalog = this.currentCatalog): TranslatedMatch<T> | null {
     for (let [key, value] of Object.entries(catalog)) {
-      const match = RRMatch(value, translatedPath);
+      const match = matchPath<T>(value, translatedPath);
       if (match) {
-        return {key, match};
+        return {
+          ...match,
+          original: {
+            ...match,
+            path: key
+          }
+        };
       }
     }
 
@@ -129,3 +156,14 @@ export class RouterI18n {
   }
 }
 
+export interface TranslatedMatch<T = {}> extends RRMatch<T> {
+  original: RRMatch<T>
+}
+
+export interface TranslatedLocation extends H.Location {
+  original: H.Location
+}
+
+export function isTranslatedMatch<T>(match: undefined | null | RRMatch<T> | TranslatedMatch<T>): match is TranslatedMatch<T> {
+  return match ? 'original' in match : false
+}
