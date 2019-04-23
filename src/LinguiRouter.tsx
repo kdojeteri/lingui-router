@@ -46,7 +46,7 @@ function matchPath<T>(pattern: string, path: string): RRMatch<T> | null {
   return {
     params,
     isExact: true,
-    path: path,
+    path: pattern,
     url: ""
   };
 }
