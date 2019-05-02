@@ -1,9 +1,10 @@
 import {
   Route as RRRoute,
+  Switch as RRSwitch,
   RouteChildrenProps as RRRouteChildrenProps,
   RouteComponentProps as RRRouteComponentProps,
   RouteProps as RRRouteProps,
-  SwitchProps
+  SwitchProps, withRouter, RouteComponentProps
 } from "react-router";
 import * as React from "react";
 import {ReactElement} from "react";
@@ -46,9 +47,10 @@ function renderRoutePair(routerI18n: RouterI18n, routeContext: RRRouteChildrenPr
   const routeProps: RouteProps = {...props, location, computedMatch: match || undefined};
 
   const key = Array.isArray(path) ? path.join(';') : path;
+
   return [
-    <RRRoute path={routerI18n.route(path)} key={`${key || 'route'}-i18n`} {...routeProps}/>,
-    <RRRoute path={path} key={key || 'route'} {...routeProps}/>,
+    <RRRoute {...routeProps} path={routerI18n.route(path)} key={`${key || 'route'}-i18n`}/>,
+    <RRRoute {...routeProps} path={path} key={key || 'route'}/>,
   ]
 }
 
@@ -58,15 +60,19 @@ export const Route = (props: RouteProps) => (
   )}</WithLinguiRouter>
 );
 
-export const Switch = ({children}: SwitchProps) => (
-  <WithLinguiRouter>{(routerI18n) => (
-    <RRRoute>{(routeComponentProps) =>
-      flatten(
-        React.Children.map(children, (el) =>
-          React.isValidElement(el)
-            ? renderRoutePair(routerI18n, routeComponentProps, el.props)
-            : el
-        )
-      )}</RRRoute>
-  )}</WithLinguiRouter>
+const SwitchComponent = ({children, ...routeComponentProps}: RouteChildrenProps & SwitchProps) => (
+  <WithLinguiRouter>{(routerI18n) => {
+    const routes = flatten(
+      React.Children.map(children, (el) =>
+        React.isValidElement(el)
+          ? renderRoutePair(routerI18n, routeComponentProps, el.props)
+          : el
+      )
+    );
+
+    return <RRSwitch>{routes}</RRSwitch>;
+  }}</WithLinguiRouter>
 );
+
+export const Switch = withRouter(SwitchComponent);
+Switch.displayName = "Switch";

@@ -3,7 +3,7 @@ import {Router} from "react-router";
 import createMemoryHistory from "history/createMemoryHistory";
 import * as React from "react";
 import {mount} from "enzyme";
-import {Route} from "./RouteComponents";
+import {Route, Switch} from "./RouteComponents";
 import {LinguiRouter} from "./LinguiRouter";
 
 
@@ -67,7 +67,7 @@ describe('Route', () => {
     const routeFunction = jest.fn(() => null);
 
     mount(
-      <I18nProvider language={'cs'} >
+      <I18nProvider language={'cs'}>
         <LinguiRouter catalogs={{cs: {'/testing-path': '/testovaci-cesta'}}}>
           <Router history={history}>
             <Route path={"/testing-path"} render={routeFunction}/>
@@ -103,4 +103,32 @@ describe('Route', () => {
       location: {pathname: '/testing-path/parametr', original: {pathname: '/cs/testovaci-cesta/parametr'}}
     });
   });
+
+  it('should render new path when location changes', () => {
+    const history = createMemoryHistory();
+    history.push('/cs/test-1');
+
+    const routeFunction1 = jest.fn(() => null);
+    const routeFunction2 = jest.fn(() => null);
+
+    mount(
+      <I18nProvider language={'cs'}>
+        <LinguiRouter catalogs={{cs: {'/test-1': '/test-1', '/test-2': '/test-2'}}}>
+          <Router history={history}>
+            <Switch>
+              <Route path={"/test-1"} render={routeFunction1}/>
+              <Route path={"/test-2"} render={routeFunction2}/>
+            </Switch>
+          </Router>
+        </LinguiRouter>
+      </I18nProvider>
+    );
+
+    expect(routeFunction1.mock.calls.length).toBeGreaterThan(0);
+    expect(routeFunction2.mock.calls.length).toBe(0);
+
+    history.push('/cs/test-2');
+
+    expect(routeFunction2.mock.calls.length).toBeGreaterThan(0);
+  })
 });
