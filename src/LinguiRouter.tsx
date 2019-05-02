@@ -78,7 +78,7 @@ export class RouterI18n {
    */
   link(path: string): string {
     const url = new URL(path, "https://garbage-placeholder/"); // use placeholder base, we're not using it anyway
-    const found = this.matchUntranslated(url.pathname);
+    const found = this.findUntranslatedMatch(url.pathname);
 
     if (!found) {
       const language = Object.keys(this.routeCatalogs).find(lang => url.pathname.startsWith('/' + lang));
@@ -115,16 +115,16 @@ export class RouterI18n {
 
     const lookupValue = pathname.substr(('/' + language).length);
 
-    const found = this.matchTranslated(lookupValue, this.routeCatalogs[language]);
+    const found = this.findTranslatedMatch(lookupValue, this.routeCatalogs[language]);
 
     if (!found) {
-      return lookupValue;
+      return pathname;
     }
 
     return compile(found.original.path)(found.params);
   }
 
-  matchUntranslated<T>(untranslatedPath: string, catalog = this.currentCatalog): TranslatedMatch<T> | null {
+  findUntranslatedMatch<T>(untranslatedPath: string, catalog = this.currentCatalog): TranslatedMatch<T> | null {
     for (let key of Object.keys(catalog)) {
       const match = matchPath<T>(key, untranslatedPath);
       if (match) {
@@ -138,7 +138,7 @@ export class RouterI18n {
     return null;
   }
 
-  matchTranslated<T>(translatedPath: string, catalog = this.currentCatalog): TranslatedMatch<T> | null {
+  findTranslatedMatch<T>(translatedPath: string, catalog = this.currentCatalog): TranslatedMatch<T> | null {
     for (let [key, value] of Object.entries(catalog)) {
       const match = matchPath<T>(value, translatedPath);
       if (match) {
@@ -153,6 +153,17 @@ export class RouterI18n {
     }
 
     return null;
+  }
+
+  match<T>(pattern: string, pathname: string): TranslatedMatch<T> | null {
+    const match =  matchPath<T>(pattern, this.untranslatePathname(pathname));
+    return match && {
+      ...match,
+      original: {
+        ...match,
+        path: pathname
+      }
+    }
   }
 }
 

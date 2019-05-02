@@ -41,7 +41,7 @@ function renderRoutePair(routerI18n: RouterI18n, routeContext: RRRouteChildrenPr
   } else if (!path && isTranslatedMatch(routeContext.match)) {
     match = routeContext.match;
   } else {
-    match = routerI18n.matchTranslated(location.pathname);
+    match = routerI18n.findTranslatedMatch(location.pathname);
   }
 
   const routeProps: RouteProps = {...props, location, computedMatch: match || undefined};
