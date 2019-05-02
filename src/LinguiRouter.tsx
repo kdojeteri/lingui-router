@@ -35,8 +35,10 @@ interface MatchOptions {
 }
 
 function matchPath<T>(pattern: string, path: string, options: MatchOptions = {}): RRMatch<T> | null {
+  const exact = options.exact !== false;
+
   const keys: Key[] = [];
-  const regexp = pathToRegexp(pattern, keys, {end: !!options.exact, sensitive: !!options.sensitive});
+  const regexp = pathToRegexp(pattern, keys, {end: exact, sensitive: !!options.sensitive});
   const values = regexp.exec(path);
 
   if (!values) {
@@ -50,7 +52,7 @@ function matchPath<T>(pattern: string, path: string, options: MatchOptions = {})
 
   return {
     params,
-    isExact: !!options.exact,
+    isExact: exact,
     path: pattern,
     url: ""
   };
@@ -88,7 +90,7 @@ export class RouterI18n {
    */
   link(path: string): string {
     const url = new URL(path, "https://garbage-placeholder/"); // use placeholder base, we're not using it anyway
-    const found = this.findUntranslatedMatch(url.pathname);
+    const found = this.findUntranslatedMatch(url.pathname, {match: {exact: true}});
 
     if (!found) {
       const language = Object.keys(this.routeCatalogs).find(lang => url.pathname.startsWith('/' + lang));
@@ -110,12 +112,12 @@ export class RouterI18n {
   normalizeLocation(location: H.Location): TranslatedLocation {
     return {
       ...location,
-      pathname: this.untranslatePathname(location.pathname),
+      pathname: this.untranslatePathname(location.pathname, {exact: true}),
       original: location
     }
   }
 
-  untranslatePathname(pathname: string): string {
+  untranslatePathname(pathname: string, matchOpts?: MatchOptions): string {
     // detect language
     const language = Object.keys(this.routeCatalogs).find(lang => pathname.startsWith('/' + lang));
 
@@ -125,7 +127,7 @@ export class RouterI18n {
 
     const lookupValue = pathname.substr(('/' + language).length);
 
-    const found = this.findTranslatedMatch(lookupValue, {catalog: this.routeCatalogs[language]});
+    const found = this.findTranslatedMatch(lookupValue, {catalog: this.routeCatalogs[language], match: matchOpts});
 
     if (!found) {
       return pathname;
