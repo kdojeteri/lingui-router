@@ -29,9 +29,14 @@ export const WithLinguiRouter = ({children}: { children: (routerI18n: RouterI18n
 );
 
 
-function matchPath<T>(pattern: string, path: string): RRMatch<T> | null {
+interface MatchOptions {
+  exact?: boolean;
+  sensitive?: boolean;
+}
+
+function matchPath<T>(pattern: string, path: string, options: MatchOptions = {}): RRMatch<T> | null {
   const keys: Key[] = [];
-  const regexp = pathToRegexp(pattern, keys);
+  const regexp = pathToRegexp(pattern, keys, {end: !!options.exact, sensitive: !!options.sensitive});
   const values = regexp.exec(path);
 
   if (!values) {
@@ -45,10 +50,15 @@ function matchPath<T>(pattern: string, path: string): RRMatch<T> | null {
 
   return {
     params,
-    isExact: true,
+    isExact: !!options.exact,
     path: pattern,
     url: ""
   };
+}
+
+interface FindMatchOptions {
+  catalog?: object
+  match?: MatchOptions
 }
 
 export class RouterI18n {
@@ -115,7 +125,7 @@ export class RouterI18n {
 
     const lookupValue = pathname.substr(('/' + language).length);
 
-    const found = this.findTranslatedMatch(lookupValue, this.routeCatalogs[language]);
+    const found = this.findTranslatedMatch(lookupValue, {catalog: this.routeCatalogs[language]});
 
     if (!found) {
       return pathname;
@@ -124,9 +134,12 @@ export class RouterI18n {
     return compile(found.original.path)(found.params);
   }
 
-  findUntranslatedMatch<T>(untranslatedPath: string, catalog = this.currentCatalog): TranslatedMatch<T> | null {
+  findUntranslatedMatch<T>(untranslatedPath: string, opts: FindMatchOptions = {}): TranslatedMatch<T> | null {
+    const catalog = opts.catalog || this.currentCatalog;
+    const matchOpts = opts.match || {};
+
     for (let key of Object.keys(catalog)) {
-      const match = matchPath<T>(key, untranslatedPath);
+      const match = matchPath<T>(key, untranslatedPath, matchOpts);
       if (match) {
         return {
           ...match,
@@ -138,9 +151,12 @@ export class RouterI18n {
     return null;
   }
 
-  findTranslatedMatch<T>(translatedPath: string, catalog = this.currentCatalog): TranslatedMatch<T> | null {
+  findTranslatedMatch<T>(translatedPath: string, opts: FindMatchOptions = {}): TranslatedMatch<T> | null {
+    const catalog = opts.catalog || this.currentCatalog;
+    const matchOpts = opts.match || {};
+
     for (let [key, value] of Object.entries(catalog)) {
-      const match = matchPath<T>(value, translatedPath);
+      const match = matchPath<T>(value, translatedPath, matchOpts);
       if (match) {
         return {
           ...match,
@@ -155,8 +171,8 @@ export class RouterI18n {
     return null;
   }
 
-  match<T>(pattern: string, pathname: string): TranslatedMatch<T> | null {
-    const match =  matchPath<T>(pattern, this.untranslatePathname(pathname));
+  match<T>(pattern: string, pathname: string, opts: MatchOptions = {}): TranslatedMatch<T> | null {
+    const match = matchPath<T>(pattern, this.untranslatePathname(pathname), opts);
     return match && {
       ...match,
       original: {
