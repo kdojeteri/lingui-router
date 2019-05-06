@@ -24,7 +24,7 @@ export interface NavLinkProps extends Omit<RRNavLinkProps, "to"> {
 }
 
 export const NavLink = ({to, ...otherProps}: NavLinkProps) => (<WithLinguiRouter>{router => (
-  <RRNavLink to={router.link(to)} {...otherProps}/>
+  <RRNavLink to={router.link(to)} isActive={(_, location) => [to, router.link(to)].includes(location.pathname)} {...otherProps}/>
 )}</WithLinguiRouter>);
 
 export interface RedirectProps extends Omit<RRRedirectProps, "to"> {
