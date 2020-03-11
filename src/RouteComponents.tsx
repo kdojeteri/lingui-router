@@ -83,5 +83,5 @@ const SwitchComponent = ({children, ...routeComponentProps}: RouteChildrenProps 
   }}</WithLinguiRouter>
 );
 
-export const Switch = withRouter(SwitchComponent);
+export const Switch: React.ComponentType<{children: React.ReactNode}> = withRouter(SwitchComponent) as any;
 Switch.displayName = "Switch";
