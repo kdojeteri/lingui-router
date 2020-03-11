@@ -8,13 +8,13 @@ import lingui__react from '@lingui/react'
 import react_is from 'react-is'
 import {promises as fs} from 'fs';
 import builtins from 'builtin-modules'
+import packageJson from './package.json'
 
 const packageJsonPluginDefinition = {
   name: "generate-package-json",
   generateBundle: async () => {
-    const original = await import('./package.json');
-    const packageJson = {
-      ...original.default,
+    const newPackage = {
+      ...packageJson,
       "main": "cjs/index.js",
       "module": "es/index.js",
       "jsnext:main": "es/index.js",
@@ -24,7 +24,7 @@ const packageJsonPluginDefinition = {
       scripts: undefined
     };
 
-    await fs.writeFile('build/package.json', JSON.stringify(packageJson, undefined, 4));
+    await fs.writeFile('build/package.json', JSON.stringify(newPackage, undefined, 4));
   }
 };
 
@@ -46,7 +46,10 @@ const config =  {
       exports: 'named'
     },
   ],
-  external: builtins,
+  external: [
+    ...builtins,
+    ...Object.keys(packageJson.peerDependencies)
+  ],
   plugins: [
     resolve({
       extensions: ['.mjs', '.js', '.json', '.node', '.ts', '.tsx'],
