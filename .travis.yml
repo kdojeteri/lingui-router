@@ -5,8 +5,9 @@ node_js:
 script:
   - npm run build
 
+before_deploy: "cd build"
 deploy:
-  local_dir: 'build'
+  skip_cleanup: true
   provider: 'npm'
   email: 'kdojeteri@gmail.com'
   api_key: $NPM_API_KEY
