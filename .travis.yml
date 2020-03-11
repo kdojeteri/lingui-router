@@ -1,4 +1,14 @@
 language: node_js
 node_js:
-  - 9
-  - 8
+  - 10
+
+script:
+  - npm run build
+
+deploy:
+  local_dir: 'build'
+  provider: 'npm'
+  email: 'kdojeteri@gmail.com'
+  api_key: $NPM_API_KEY
+  on:
+    branch: master

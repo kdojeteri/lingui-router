@@ -1,15 +1,15 @@
 import {
   Route as RRRoute,
-  Switch as RRSwitch,
   RouteChildrenProps as RRRouteChildrenProps,
   RouteComponentProps as RRRouteComponentProps,
   RouteProps as RRRouteProps,
-  SwitchProps, withRouter, RouteComponentProps
+  Switch as RRSwitch,
+  SwitchProps,
+  withRouter
 } from "react-router";
 import * as React from "react";
-import {ReactElement} from "react";
-import {isTranslatedMatch, RouterI18n, TranslatedLocation, TranslatedMatch, WithLinguiRouter} from "./LinguiRouter";
-import {flatten} from 'ramda';
+import {WithLinguiRouter} from "./LinguiRouter";
+import {isTranslatedMatch, RouterI18n, TranslatedLocation, TranslatedMatch} from "./RouterI18n";
 
 
 export interface RouteChildrenProps<T = {}> extends RRRouteChildrenProps<T> {
@@ -22,7 +22,7 @@ export interface RouteComponentProps<T = {}> extends RRRouteComponentProps<T> {
   match: TranslatedMatch<T>
 }
 
-export interface RouteProps<T = any> extends RRRouteProps {
+export interface RouteProps<T = any> extends Omit<RRRouteProps, 'component' | 'render' | 'children'> {
   component?: React.ComponentType<RouteComponentProps<T>> | React.ComponentType<any>;
   render?: ((props: RouteComponentProps<T>) => React.ReactNode);
   children?: ((props: RouteChildrenProps<T>) => React.ReactNode) | React.ReactNode;
@@ -31,7 +31,7 @@ export interface RouteProps<T = any> extends RRRouteProps {
   computedMatch?: TranslatedMatch<T> // Match computed by a switch component Switch above
 }
 
-function renderRoutePair(routerI18n: RouterI18n, routeContext: RRRouteChildrenProps, props: RouteProps): [ReactElement<RouteProps>, ReactElement<RouteProps>] {
+function renderRoutePair(routerI18n: RouterI18n, routeContext: RRRouteChildrenProps, props: RouteProps) {
   const {path, component, render, children, ...otherProps} = props;
   const location = otherProps.location || routerI18n.normalizeLocation(routeContext.location);
 
@@ -60,15 +60,24 @@ export const Route = (props: RouteProps) => (
   )}</WithLinguiRouter>
 );
 
+function flat<T>(acc: T[], value: T | T[]) {
+  if (Array.isArray(value)) {
+    return [...acc, ...value];
+  } else {
+    return [...acc, value];
+  }
+}
+
 const SwitchComponent = ({children, ...routeComponentProps}: RouteChildrenProps & SwitchProps) => (
   <WithLinguiRouter>{(routerI18n) => {
-    const routes = flatten(
-      React.Children.map(children, (el) =>
+    const routes = React.Children
+      .toArray(children)
+      .map(el =>
         React.isValidElement(el)
           ? renderRoutePair(routerI18n, routeComponentProps, el.props)
-          : el
+          : el || null
       )
-    );
+      .reduce(flat, []);
 
     return <RRSwitch>{routes}</RRSwitch>;
   }}</WithLinguiRouter>

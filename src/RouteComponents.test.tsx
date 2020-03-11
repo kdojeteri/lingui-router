@@ -76,6 +76,7 @@ describe('Route', () => {
       </I18nProvider>
     );
 
+    // @ts-ignore
     expect(routeFunction.mock.calls[0][0]).toMatchObject({
       match: {path: '/testing-path'},
       location: {pathname: '/testing-path', original: {pathname: '/cs/testovaci-cesta'}}
@@ -98,6 +99,7 @@ describe('Route', () => {
       </I18nProvider>
     );
 
+    // @ts-ignore
     expect(routeFunction.mock.calls[0][0]).toMatchObject({
       match: {path: '/testing-path/:param'},
       location: {pathname: '/testing-path/parametr', original: {pathname: '/cs/testovaci-cesta/parametr'}}

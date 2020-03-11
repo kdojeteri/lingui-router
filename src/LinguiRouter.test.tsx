@@ -1,4 +1,4 @@
-import {RouterI18n} from "./LinguiRouter";
+import {RouterI18n} from "./RouterI18n";
 
 describe('LinguiRouter', () => {
   it("should un-translate a location", () => {
